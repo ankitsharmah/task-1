@@ -41,10 +41,10 @@ func GetClubById(c echo.Context) error{
 	if err!=nil {
 		return err
 	}
-
-	if err:=db.Find(&club,id).Error; err!=nil{
-		return err
+	if err := db.Preload("Events.Users").First(&club, id).Error; err != nil {
+		return c.JSON(http.StatusNotFound, "Club not found")
 	}
+	
 
 	return c.JSON(http.StatusOK,club)
 

@@ -1,11 +1,9 @@
 package controller
 
 import (
-	"clubApi/config"
-	"clubApi/models"
-	"fmt"
+	
+	"clubApi/tasks"
 	"net/http"
-	"strconv"
 
 	// "strings"
 
@@ -14,20 +12,12 @@ import (
 
 // SaveUser handles the saving of a user to the database.
 func SaveUser(c echo.Context) error {
-	u := new(models.User) // Correct usage
 
-	if err := c.Bind(u); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
-	}
+	response:=tasks.SaveUser(c);
 
-	db := config.DB()
 
-	if err := db.Create(u).Error; err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to save user")
-	}
-
-	response := map[string]interface{}{
-		"data": u,
+	if response!= nil {
+		return echo.NewHTTPError(http.StatusBadRequest, response)
 	}
 
 	return c.JSON(http.StatusOK, response)
@@ -36,11 +26,9 @@ func SaveUser(c echo.Context) error {
 
 func GetAllUser (c echo.Context) error{
 
-	var users[] *models.User
+	res:=tasks.GetAllUser(c);
 
-	db:=config.DB()
-
-	if res := db.Find(&users); res.Error != nil {
+	if res != nil {
 		data := map[string]string{
 			"message":"faild in sending users" ,
 		}
@@ -49,7 +37,7 @@ func GetAllUser (c echo.Context) error{
 	}
 
 	response := map[string]interface{}{
-		"data": users,
+		"data": res,
 	} 
 
 	return c.JSON(http.StatusOK, response)
@@ -57,22 +45,13 @@ func GetAllUser (c echo.Context) error{
 }
 
 func GetUserById(c echo.Context) error {
-	idStr := c.Param("id")
-	fmt.Printf("Received ID: %s\n", idStr) // Debug print
 
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid user ID")
+	res:=tasks.GetUserById(c);
+
+	if res!= nil {
+		return echo.NewHTTPError(http.StatusNotFound,res)
 	}
 
-	db := config.DB()
-
-	user := new(models.User)
-
-	if err := db.First(user, id).Error; err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, "User not found")
-	}
-
-	return c.JSON(http.StatusOK, user)
+	return c.JSON(http.StatusOK, res)
 }
 

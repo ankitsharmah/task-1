@@ -34,6 +34,12 @@ func main() {
 	clubGroup.POST("/add", controller.SaveClub)
 	clubGroup.GET("/all", controller.GetAllClubs)
 	clubGroup.GET("/:id", controller.GetClubById)
+
+	//define routes for events
+	eventGroup:=e.Group("/api/v1/events")
+	eventGroup.POST("/add/:id",controller.CreateEvent)
+	eventGroup.POST("/add-event/:id/:userid",controller.RegisterUserForEvent)
+	eventGroup.GET("/all", controller.FindAllEvent)
 	// Start the server on port 8080 and log any fatal errors
 	port := ":8080"
 	log.Printf("Starting server on port %s", port)

@@ -25,13 +25,8 @@ func DatabaseInit() error {
 	fmt.Println("Connected to the database successfully")
 
 	// AutoMigrate the User model
-	if err := database.AutoMigrate(&models.User{}); err != nil {
-		return fmt.Errorf("failed to migrate table: %w", err)
-	}
-	// AutoMigrate the User model
-	if err := database.AutoMigrate(&models.Club{}); err != nil {
-		return fmt.Errorf("failed to migrate table: %w", err)
-	}
+    database.AutoMigrate(&models.Club{}, &models.Event{}, &models.User{}, &models.EventUser{})
+
 
 	return nil
 }
