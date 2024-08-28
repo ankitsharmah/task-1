@@ -1,77 +1,59 @@
 package controller
 
 import (
-	"clubApi/config"
-	"clubApi/models"
+	
+	"clubApi/tasks"
 	"net/http"
-	"strconv"
+	
 
 	"github.com/labstack/echo/v4"
 )
 
 func SaveClub(c echo.Context) error{
 
-	club:=new(*models.Club)
-	db:=config.DB()
-	if err:=c.Bind(club); err!=nil{
-		return err
-	}
-
-	if err:=db.Create(club).Error; err!=nil{
+	res:=tasks.SaveClub(c);
+	if res!=nil{
 
 		data:= map[string]interface{}{
-			"error":err,
+			"error":res,
 		}
 
 		return c.JSON(http.StatusOK,data);
 	}
-	res:= map[string]string{
-		"message":"club saved successfully",
-	}
+	
 	return c.JSON(http.StatusOK,res);
 
 }
 
 func GetClubById(c echo.Context) error{
-	club :=new(*models.Club)
-	db:=config.DB()
+	res:=tasks.GetClubById(c);
+	if res!=nil{
 
-	id,err:=strconv.Atoi(c.Param("id"))
-	
-	if err!=nil {
-		return err
-	}
-	if err := db.Preload("Events.Users").First(&club, id).Error; err != nil {
-		return c.JSON(http.StatusNotFound, "Club not found")
+		data:= map[string]interface{}{
+			"error":res,
+		}
+
+		return c.JSON(http.StatusOK,data);
 	}
 	
-
-	return c.JSON(http.StatusOK,club)
+	return c.JSON(http.StatusOK,res);
 
 
 }
 
 func GetAllClubs(c echo.Context) error{
 
-	db:=config.DB()
+	res:=tasks.GetAllClubs(c);
+	if res!=nil{
 
-	var clubs[] *models.Club
-
-
-
-	if err:=db.Find(&clubs).Error; err!=nil{
-		data:=map[string]string{
-			"message":"error in finding all clubs",
+		data:= map[string]interface{}{
+			"error":res,
 		}
 
-		return c.JSON(http.StatusOK,data)
+		return c.JSON(http.StatusOK,data);
 	}
-
-	res:=map[string]interface{}{
-		"clubs":clubs,
-	}
-
-	return c.JSON(http.StatusOK,res)
+	
+	return c.JSON(http.StatusOK,res);
 }
 
 
